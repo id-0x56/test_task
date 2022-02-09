@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\PointController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -41,4 +44,29 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * @var array<int, string>
+     */
+    private static array $presents = [
+        PointController::class,
+//        'App\Http\Controllers\MoneyController',
+//        'App\Http\Controllers\ItemController',
+    ];
+
+    /**
+     * @return HasOne
+     */
+    public function points(): HasOne
+    {
+        return $this->hasOne(Point::class);
+    }
+
+    /**
+     * @return Collection
+     */
+    public static function getAvailablePresents(): Collection
+    {
+        return collect(self::$presents);
+    }
 }

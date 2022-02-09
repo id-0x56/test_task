@@ -22,3 +22,22 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';
+
+// getPresent
+Route::post('get-present', [\App\Http\Controllers\PointController::class, 'store'])
+    ->middleware(['auth', \App\Http\Middleware\RandomRequestMiddleware::class])
+    ->name('get-present');
+
+
+
+
+
+Route::get('/test', function () {
+    dd(
+        \App\Models\User::query()
+            ->where('id', 1)
+            ->first()
+//            ->points
+//            ->count
+    );
+});
