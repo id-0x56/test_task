@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PointSeeder::class,
             MoneySeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }

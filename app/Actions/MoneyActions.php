@@ -37,10 +37,9 @@ class MoneyActions
      */
     public function setValue(int $value): void
     {
-        $this->money->updateOrCreate([
-            'user_id' => auth()->user()->id
-        ], [
-            'count' => $value
-        ]);
+        $this->money->updateOrCreate(['user_id' => auth()->user()->id], [
+                'user_id' => auth()->user()->id,
+                'count' => $value
+            ]);
     }
 }

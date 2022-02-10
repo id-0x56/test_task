@@ -10,6 +10,7 @@ class Money extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'count',
     ];
 }

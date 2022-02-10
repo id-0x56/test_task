@@ -25,10 +25,9 @@ class PointActions
      */
     public function setValue(int $value): void
     {
-        $this->point->updateOrCreate([
-            'user_id' => auth()->user()->id
-        ], [
-            'count' => $value
-        ]);
+        $this->point->updateOrCreate(['user_id' => auth()->user()->id], [
+                'user_id' => auth()->user()->id,
+                'count' => $value
+            ]);
     }
 }

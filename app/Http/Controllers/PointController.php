@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\PointActions;
+use App\Actions\SettingActions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -14,11 +15,17 @@ class PointController extends Controller
     private PointActions $pointActions;
 
     /**
+     * @var SettingActions
+     */
+    private SettingActions $settingActions;
+
+    /**
      * @param PointActions $pointActions
      */
-    public function __construct(PointActions $pointActions)
+    public function __construct(PointActions $pointActions, SettingActions $settingActions)
     {
         $this->pointActions = $pointActions;
+        $this->settingActions = $settingActions;
     }
 
     /**
@@ -27,7 +34,10 @@ class PointController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $this->pointActions->setValue(rand(1, 10));
+        $currentPoints = auth()->user()->points->count ?? 0;
+        $currentPoints += rand($this->settingActions->getParams()->min_point, $this->settingActions->getParams()->max_point);
+
+        $this->pointActions->setValue($currentPoints);
 
         return redirect()->route('dashboard');
     }
