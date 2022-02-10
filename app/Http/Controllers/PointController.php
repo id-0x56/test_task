@@ -2,30 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePointRequest;
-use App\Models\Point;
+use App\Actions\PointActions;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class PointController extends Controller
 {
-    public function __construct()
+    /**
+     * @var PointActions
+     */
+    private PointActions $pointActions;
+
+    /**
+     * @param PointActions $pointActions
+     */
+    public function __construct(PointActions $pointActions)
     {
-        $this->authorizeResource(Point::class);
+        $this->pointActions = $pointActions;
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StorePointRequest  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function store(StorePointRequest $request)
+    public function store(Request $request): RedirectResponse
     {
-        auth()->user()->points()
-            ->updateOrCreate([
-                'user_id' => auth()->user()->id
-            ], [
-                'count' => rand(1, 10)
-            ]);
+        $this->pointActions->setValue(rand(1, 10));
 
         return redirect()->route('dashboard');
     }

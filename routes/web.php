@@ -19,8 +19,8 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard', [
-        'points' => auth()->user()->points,
-        'moneys' => auth()->user()->moneys,
+        'points' => auth()->user()->points ?? 0,
+        'moneys' => auth()->user()->moneys ?? 0,
     ]);
 })->middleware(['auth'])->name('dashboard');
 

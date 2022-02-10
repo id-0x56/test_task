@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\ItemController;
 use App\Http\Controllers\MoneyController;
 use App\Http\Controllers\PointController;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -53,7 +51,7 @@ class User extends Authenticatable
     private static array $presents = [
         PointController::class,
         MoneyController::class,
-        ItemController::class,
+//        ItemController::class,
     ];
 
     /**

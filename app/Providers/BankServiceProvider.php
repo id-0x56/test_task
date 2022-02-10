@@ -2,22 +2,24 @@
 
 namespace App\Providers;
 
+use App\Services\Banks\GreenBank;
+use App\Services\Interfaces\Bank;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class BankServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      *
      * @return void
      */
     public function register()
     {
-        $this->app->register(BankServiceProvider::class);
+        $this->app->bind(Bank::class, GreenBank::class);
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      *
      * @return void
      */

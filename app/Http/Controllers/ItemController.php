@@ -2,50 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreItemRequest;
-use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreItemRequest  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function store(StoreItemRequest $request)
+    public function store(Request $request): RedirectResponse
     {
-        dd(
+        dump(
             __METHOD__,
             $request,
         );
+        return redirect()->route('dashboard');
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateItemRequest  $request
-     * @param  \App\Models\Item  $item
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Item $item
+     * @return RedirectResponse
      */
-    public function update(UpdateItemRequest $request, Item $item)
+    public function update(Request $request, Item $item): RedirectResponse
     {
-        dd(
+        dump(
             __METHOD__,
         );
+        return redirect()->route('dashboard');
+
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Item  $item
-     * @return \Illuminate\Http\Response
+     * @param Item $item
+     * @return RedirectResponse
      */
-    public function destroy(Item $item)
+    public function destroy(Item $item): RedirectResponse
     {
-        dd(
+        dump(
             __METHOD__,
         );
+        return redirect()->route('dashboard');
     }
 }

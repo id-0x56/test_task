@@ -2,76 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Money;
+use App\Actions\MoneyActions;
+use App\Actions\PointActions;
+use App\Services\Interfaces\Bank;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class MoneyController extends Controller
 {
-    public function __construct()
+    /**
+     * @var MoneyActions
+     */
+    private MoneyActions $moneyActions;
+
+    /**
+     * @var PointActions
+     */
+    private PointActions $pointActions;
+
+    /**
+     * @param MoneyActions $moneyActions
+     * @param PointActions $pointActions
+     */
+    public function __construct(MoneyActions $moneyActions, PointActions $pointActions)
     {
-        $this->authorizeResource(Money::class);
+        $this->moneyActions = $moneyActions;
+        $this->pointActions = $pointActions;
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreMoneyRequest  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        auth()->user()->moneys()
-            ->updateOrCreate([
-                'user_id' => auth()->user()->id
-            ], [
-                'count' => rand(1, 10)
-            ]);
+        $this->moneyActions->setValue(rand(1, 10));
 
         return redirect()->route('dashboard');
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @param Bank $bank
+     * @return RedirectResponse
      */
-    public function withdraw(Request $request)
+    public function withdraw(Bank $bank): RedirectResponse
     {
-        auth()->user()->moneys()
-            ->updateOrCreate([
-                'user_id' => auth()->user()->id
-            ], [
-                'count' => 0
-            ]);
+        if (auth()->user()->moneys->count > 0) {
+            if ($bank->deposit(auth()->user()->moneys->count)->status() == JsonResponse::HTTP_OK)
+            {
+                $this->moneyActions->setToZero();
+            }
+        }
 
         return redirect()->route('dashboard');
     }
 
     /**
-     * Update the specified resource in storage.
-     *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function convert(Request $request)
+    public function convert(Request $request): RedirectResponse
     {
         $currentMoneys = auth()->user()->moneys->count;
         $currentPoints = auth()->user()->points->count;
 
-        auth()->user()->points()
-            ->updateOrCreate([
-                'user_id' => auth()->user()->id
-            ], [
-                'count' =>  $currentPoints + $currentMoneys
-            ]);
-
-        auth()->user()->moneys()
-            ->updateOrCreate([
-                'user_id' => auth()->user()->id
-            ], [
-                'count' => 0
-            ]);
+        $this->pointActions->setValue($currentPoints + $currentMoneys);
+        $this->moneyActions->setToZero();
 
         return redirect()->route('dashboard');
     }
