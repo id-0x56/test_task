@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Models\Money;
+use Illuminate\Support\Facades\Log;
 
 class MoneyActions
 {
@@ -20,26 +21,15 @@ class MoneyActions
     }
 
     /**
-     * @return void
-     */
-    public function setToZero(): void
-    {
-        $this->money->updateOrCreate([
-            'user_id' => auth()->user()->id
-        ], [
-            'count' => 0
-        ]);
-    }
-
-    /**
      * @param int $value
      * @return void
      */
-    public function setValue(int $value): void
+    public function setValue(int $value = 0): void
     {
-        $this->money->updateOrCreate(['user_id' => auth()->user()->id], [
-                'user_id' => auth()->user()->id,
-                'count' => $value
-            ]);
+        $user_id = $this->money->user_id ?? auth()->user()->id;
+        $this->money->updateOrCreate(['user_id' => $user_id], [
+            'user_id' => $user_id,
+            'count' => $value
+        ]);
     }
 }

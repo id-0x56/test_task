@@ -34,10 +34,10 @@ class PointController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $currentPoints = auth()->user()->points->count ?? 0;
-        $currentPoints += rand($this->settingActions->getParams()->min_point, $this->settingActions->getParams()->max_point);
+        $currentPointCount = auth()->user()->points->count ?? 0;
+        $currentPointCount += rand($this->settingActions->getParams()->min_point, $this->settingActions->getParams()->max_point);
 
-        $this->pointActions->setValue($currentPoints);
+        $this->pointActions->setValue($currentPointCount);
 
         return redirect()->route('dashboard');
     }

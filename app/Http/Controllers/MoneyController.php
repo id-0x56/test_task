@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Actions\MoneyActions;
 use App\Actions\PointActions;
 use App\Actions\SettingActions;
+use App\Jobs\BankRequestJob;
 use App\Services\Interfaces\Bank;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -45,10 +45,10 @@ class MoneyController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $currentMoneys = auth()->user()->moneys->count ?? 0;
-        $currentMoneys += rand($this->settingActions->getParams()->min_money, $this->settingActions->getParams()->max_money);
+        $currentMoneyCount = auth()->user()->moneys->count ?? 0;
+        $currentMoneyCount += rand($this->settingActions->getParams()->min_money, $this->settingActions->getParams()->max_money);
 
-        $this->moneyActions->setValue($currentMoneys);
+        $this->moneyActions->setValue($currentMoneyCount);
 
         return redirect()->route('dashboard');
     }
@@ -59,13 +59,10 @@ class MoneyController extends Controller
      */
     public function withdraw(Bank $bank): RedirectResponse
     {
-        $currentMoneys = auth()->user()->moneys->count ?? 0;
+        $currentMoneys = auth()->user()->moneys;
 
-        if ($currentMoneys > 0) {
-            if ($bank->deposit(auth()->user()->moneys->count)->status() == JsonResponse::HTTP_OK)
-            {
-                $this->moneyActions->setToZero();
-            }
+        if (!is_null($currentMoneys) && $currentMoneys->count > 0) {
+            BankRequestJob::dispatch($bank, $currentMoneys);
         }
 
         return redirect()->route('dashboard');
@@ -77,12 +74,12 @@ class MoneyController extends Controller
      */
     public function convert(Request $request): RedirectResponse
     {
-        $currentMoneys = auth()->user()->moneys->count ?? 0;
-        $currentPoints = auth()->user()->points->count ?? 0;
+        $currentMoneys = auth()->user()->moneys;
+        $currentPointCount = auth()->user()->points->count ?? 0;
 
-        if ($currentMoneys > 0) {
-            $this->pointActions->setValue($currentPoints + ($currentMoneys * $this->settingActions->getParams()->conversion_rate));
-            $this->moneyActions->setToZero();
+        if (!is_null($currentMoneys) && $currentMoneys->count > 0) {
+            $this->pointActions->setValue($currentPointCount + ($currentMoneys->count * $this->settingActions->getParams()->conversion_rate));
+            $this->moneyActions->setValue();
         }
 
         return redirect()->route('dashboard');
