@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\SettingActions;
 use App\Http\Controllers\MoneyController;
 use App\Http\Controllers\PointController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -75,6 +76,16 @@ class User extends Authenticatable
      */
     public static function getAvailablePresents(): Collection
     {
+        $totalMoneyCount = TotalMoney::query()->first()->count ?? 0;
+        $setting = Setting::query()->first();
+
+        // remove money from presents
+        if ($totalMoneyCount < (new SettingActions($setting))->getParams()->max_money) {
+            if (($key = array_search(MoneyController::class, self::$presents)) !== false) {
+                unset(self::$presents[$key]);
+            }
+        }
+
         return collect(self::$presents);
     }
 }

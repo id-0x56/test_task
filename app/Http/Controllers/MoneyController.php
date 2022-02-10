@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\MoneyActions;
 use App\Actions\PointActions;
 use App\Actions\SettingActions;
+use App\Actions\TotalMoneyActions;
 use App\Jobs\BankRequestJob;
 use App\Services\Interfaces\Bank;
 use Illuminate\Http\RedirectResponse;
@@ -46,7 +47,12 @@ class MoneyController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $currentMoneyCount = auth()->user()->moneys->count ?? 0;
-        $currentMoneyCount += rand($this->settingActions->getParams()->min_money, $this->settingActions->getParams()->max_money);
+
+        $moneyPresent = rand($this->settingActions->getParams()->min_money, $this->settingActions->getParams()->max_money);
+        $currentMoneyCount += $moneyPresent;
+
+        $totalMoneyActions = new TotalMoneyActions();
+        $totalMoneyActions->setValue($totalMoneyActions->getValue() - $moneyPresent);
 
         $this->moneyActions->setValue($currentMoneyCount);
 
