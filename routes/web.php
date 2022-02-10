@@ -18,26 +18,39 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('dashboard', [
+        'points' => auth()->user()->points,
+        'moneys' => auth()->user()->moneys,
+    ]);
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';
 
-// getPresent
-Route::post('get-present', [\App\Http\Controllers\PointController::class, 'store'])
-    ->middleware(['auth', \App\Http\Middleware\RandomRequestMiddleware::class])
-    ->name('get-present');
+Route::middleware('auth')->group(function () {
+    // get-present
+    Route::post('get-present', [\App\Http\Controllers\PointController::class, 'store'])
+        ->middleware(\App\Http\Middleware\RandomRequestMiddleware::class)
+        ->name('get-present');
 
+    // moneys
+    Route::prefix('moneys')->group(function () {
+        // withdraw
+        Route::match(['put', 'patch'], '/withdraw', [\App\Http\Controllers\MoneyController::class, 'withdraw'])
+            ->name('moneys.withdraw');
 
+        // convert
+        Route::match(['put', 'patch'], '/convert', [\App\Http\Controllers\MoneyController::class, 'convert'])
+            ->name('moneys.convert');
+    });
 
+    // items
+    Route::prefix('items')->group(function () {
+        // send
+        Route::match(['put', 'patch'], '/{item}', [\App\Http\Controllers\ItemController::class, 'update'])
+        ->name('items.send');
 
-
-Route::get('/test', function () {
-    dd(
-        \App\Models\User::query()
-            ->where('id', 1)
-            ->first()
-//            ->points
-//            ->count
-    );
+        // cancel
+        Route::delete('/{item}', [\App\Http\Controllers\ItemController::class, 'destroy'])
+            ->name('items.cancel');
+    });
 });

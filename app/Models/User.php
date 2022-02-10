@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\MoneyController;
 use App\Http\Controllers\PointController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,8 +52,8 @@ class User extends Authenticatable
      */
     private static array $presents = [
         PointController::class,
-//        'App\Http\Controllers\MoneyController',
-//        'App\Http\Controllers\ItemController',
+        MoneyController::class,
+        ItemController::class,
     ];
 
     /**
@@ -60,6 +62,14 @@ class User extends Authenticatable
     public function points(): HasOne
     {
         return $this->hasOne(Point::class);
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function moneys(): HasOne
+    {
+        return $this->hasOne(Money::class);
     }
 
     /**
