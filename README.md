@@ -19,3 +19,6 @@ composer install
 ```
 ./vendor/bin/sail php artisan queue:work
 ```
+```
+./vendor/bin/sail artisan money:send 3
+```
