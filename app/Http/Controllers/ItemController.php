@@ -2,48 +2,80 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
+use App\Actions\ItemActions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
     /**
+     * @var ItemActions
+     */
+    private ItemActions $itemActions;
+
+    /**
+     * @param ItemActions $itemActions
+     */
+    public function __construct(ItemActions $itemActions)
+    {
+        $this->itemActions = $itemActions;
+    }
+
+    /**
      * @param Request $request
      * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
-        dump(
-            __METHOD__,
-            $request,
-        );
+        $totalItem = $this->itemActions->getRandItem();
+
+        if (!is_null($totalItem)) {
+            $this->itemActions->attachItemToUser($totalItem->id);
+
+            $totalItem->count--;
+            $totalItem->save();
+        }
+
         return redirect()->route('dashboard');
     }
 
     /**
-     * @param Request $request
-     * @param Item $item
+     * @param $id
      * @return RedirectResponse
      */
-    public function update(Request $request, Item $item): RedirectResponse
+    public function update($id): RedirectResponse
     {
-        dump(
-            __METHOD__,
-        );
-        return redirect()->route('dashboard');
+        $totalItem = $this->itemActions->getItemById($id);
 
+        if (!is_null($totalItem)) {
+            $currentItem = $this->itemActions->getNotSentItemById($totalItem->id);
+
+            $currentItem->is_send = true;
+            $currentItem->save();
+        }
+
+        return redirect()->route('dashboard');
     }
 
     /**
-     * @param Item $item
+     * @param $id
      * @return RedirectResponse
      */
-    public function destroy(Item $item): RedirectResponse
+    public function destroy($id): RedirectResponse
     {
-        dump(
-            __METHOD__,
-        );
+        $totalItem = $this->itemActions->getItemById($id);
+
+        if (!is_null($totalItem)) {
+            $currentItem = $this->itemActions->getNotSentItemById($totalItem->id);
+
+            if (!is_null($currentItem)) {
+                $currentItem->delete();
+
+                $totalItem->count++;
+                $totalItem->save();
+            }
+        }
+
         return redirect()->route('dashboard');
     }
 }

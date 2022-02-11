@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\TotalItem;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
             MoneySeeder::class,
             SettingSeeder::class,
             TotalMoneySeeder::class,
+            TotalItemSeeder::class,
         ]);
     }
 }

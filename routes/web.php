@@ -17,16 +17,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard', [
-        'points' => auth()->user()->points ?? 0,
-        'moneys' => auth()->user()->moneys ?? 0,
-    ]);
-})->middleware(['auth'])->name('dashboard');
-
 require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
+    // dashboard
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+        ->name('dashboard');
+
     // get-present
     Route::post('get-present', [\App\Http\Controllers\PointController::class, 'store'])
         ->middleware(\App\Http\Middleware\RandomRequestMiddleware::class)
@@ -44,13 +41,13 @@ Route::middleware('auth')->group(function () {
     });
 
     // items
-    Route::prefix('items')->group(function () {
+    Route::prefix('item')->group(function () {
         // send
         Route::match(['put', 'patch'], '/{item}', [\App\Http\Controllers\ItemController::class, 'update'])
-        ->name('items.send');
+        ->name('item.send');
 
         // cancel
         Route::delete('/{item}', [\App\Http\Controllers\ItemController::class, 'destroy'])
-            ->name('items.cancel');
+            ->name('item.cancel');
     });
 });

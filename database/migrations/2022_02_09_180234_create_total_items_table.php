@@ -13,15 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('total_items', function (Blueprint $table) {
             $table->id();
-            $table->boolean('is_send')->default(0);
 
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-
-            $table->unsignedBigInteger('item_id');
-            $table->foreign('item_id')->references('id')->on('total_items');
+            $table->string('name')->unique();
+            $table->unsignedInteger('count')->default(0);
 
             $table->timestamps();
         });
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('total_items');
     }
 };

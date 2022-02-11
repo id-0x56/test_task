@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Actions\SettingActions;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\MoneyController;
 use App\Http\Controllers\PointController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -52,7 +54,7 @@ class User extends Authenticatable
     private static array $presents = [
         PointController::class,
         MoneyController::class,
-//        ItemController::class,
+        ItemController::class,
     ];
 
     /**
@@ -87,5 +89,17 @@ class User extends Authenticatable
         }
 
         return collect(self::$presents);
+    }
+
+    public function items(): HasManyThrough
+    {
+        return $this->HasManyThrough(
+            TotalItem::class,
+            Item::class,
+            'user_id',
+            'id',
+            'id',
+            'item_id',
+        );
     }
 }
