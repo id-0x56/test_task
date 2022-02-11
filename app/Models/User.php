@@ -78,12 +78,20 @@ class User extends Authenticatable
      */
     public static function getAvailablePresents(): Collection
     {
-        $totalMoneyCount = TotalMoney::query()->first()->count ?? 0;
         $setting = Setting::query()->first();
 
         // remove money from presents
+        $totalMoneyCount = TotalMoney::query()->first()->count ?? 0;
         if ($totalMoneyCount < (new SettingActions($setting))->getParams()->max_money) {
             if (($key = array_search(MoneyController::class, self::$presents)) !== false) {
+                unset(self::$presents[$key]);
+            }
+        }
+
+        // remove items from presents
+        $totalItemCount = TotalItem::query()->where('count', '>', 0)->count() ?? 0;
+        if ($totalItemCount == 0) {
+            if (($key = array_search(ItemController::class, self::$presents)) !== false) {
                 unset(self::$presents[$key]);
             }
         }
